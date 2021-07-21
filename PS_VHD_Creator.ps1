@@ -26,12 +26,11 @@ if (Test-Path -Path $DestinationPath )
 }
 else
 {
-    Read-Host "The Destination Path does not currently exist. If you do not wish to create the path provided, use Ctrl-C to break out of this program now or press any key to continue."
+    Read-Host "The Destination Path does not currently exist. If you do not wish to create the path provided, use Ctrl-C to break out of this program now or press 'Enter' to continue."
 }
 for ($i = 0; $i -lt [int]$NumberOfVHDs; $i++) {
     New-VHD -Path ($DestinationPath + "\VirtualDisk" + $i + ".vhdx") -SizeBytes $DriveSizeInt
 }
-#Add a portion that automatically adds the drives to a Hyper-V Virtual Machine
 #Add a portion that automatically adds the drives to a Hyper-V Virtual Machine
 Get-VM * | Sort-Object -Property Name | Format-Table
 $continue = Read-Host "Would you like to add these drives to a Hyper-V Virtual Machine (above is a list of available VMs)? y or n"
