@@ -85,6 +85,7 @@ $label3.AutoSize = $true
 $textBox3 = New-Object System.Windows.Forms.TextBox
 $textBox3.Location = '280,15'
 $textBox3.Size = '240,20'
+$textBox3.Text = "C:\"
 $button1 = New-Object System.Windows.Forms.Button
 $button1.Location = '520,14'
 $button1.Size = '22,20'
@@ -118,6 +119,12 @@ ForEach ($item in $itemsDisplayedIn_comboBox4)
 }
 $groupBox4.Controls.AddRange(@($label4,$comboBox4))
 $mainForm.Controls.Add($groupBox4)
+#Add a note at the bottom to say that VHD creation takes time!
+$label5 = New-Object System.Windows.Forms.Label
+$label5.Text = "Based on how many VHDs are created, it may take awhile after clicking 'OK'."
+$label5.Location = '5,225'
+$label5.AutoSize = $true
+$mainForm.Controls.Add($label5)
 #Display Window
 $result = $mainForm.ShowDialog()
 #Create VHDs if OK is clicked
