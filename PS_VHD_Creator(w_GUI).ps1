@@ -5,7 +5,7 @@ Add-Type -AssemblyName System.Drawing
 $mainForm = New-Object System.Windows.Forms.Form
 $mainForm.Text = 'Virtual Hard Drive Creator'
 $mainForm.Width = 600
-$mainForm.Height = 200
+$mainForm.Height = 250
 $mainForm.StartPosition = 'CenterScreen'
 $mainForm.AutoSize = $true
 #Add OK Button
@@ -62,7 +62,7 @@ $radioButton1.AutoSize = $true
 $radioButton2 = New-Object System.Windows.Forms.RadioButton
 $radioButton2.Location = '380,16'
 $radioButton2.Size = '30,30'
-$radioButton2.Checked = $false
+$radioButton2.Checked = $true
 $radioButton2.Text = "GB"
 $radioButton2.AutoSize = $true
 $radioButton3 = New-Object System.Windows.Forms.RadioButton
@@ -98,9 +98,57 @@ $button1.Add_Click(
         $textBox3.Text = $selectedfolder
     }
 )
+#Mount the VHDs to a particular VM
+$groupBox4 = New-Object System.Windows.Forms.GroupBox
+$groupBox4.Location = New-Object System.Drawing.Point(5,160)
+$groupBox4.Size = New-Object System.Drawing.Size(590,40)
+$groupBox4.Text = "VM for Drive Mounting"
+$label4 = New-Object System.Windows.Forms.Label
+$label4.Text = "Which VM do you want to mount the VHDs to:"
+$label4.Location = '10,20'
+$label4.AutoSize = $true
+$comboBox4 = New-Object System.Windows.Forms.ComboBox
+$comboBox4.Location = '280,15'
+$comboBox4.Size = '240,20'
+    # Populate the List
+$itemsDisplayedIn_comboBox4 = (Get-VM)
+ForEach ($item in $itemsDisplayedIn_comboBox4)
+{
+    $comboBox4.Items.Add($item.Name)
+}
+$groupBox4.Controls.AddRange(@($label4,$comboBox4))
+$mainForm.Controls.Add($groupBox4)
 #Display Window
 $result = $mainForm.ShowDialog()
+#Create VHDs if OK is clicked
 if ($result -eq [System.Windows.Forms.DialogResult]::OK)
-{
-    #RUN THE VHD CREATION STUFF
+    {
+    $NumberOfVHDs = $textBox1.Text
+    $DriveSize = $textBox2.Text
+    $DestinationPath = $textBox3.Text
+    $VMName = $comboBox4.Text
+    #Alter side of drive based on radio button selection
+        $DriveSizeInt = if ($radioButton3.Checked)
+        {
+            [int]$DriveSize * 1099511627776
+        }
+        elseif ($radioButton2.Checked)
+        {
+            [int]$DriveSize * 1073741824
+        }
+        elseif ($radioButton1.Checked)
+        {
+            [int]$DriveSize * 1048576
+        }
+    #create VHDs in path directed and of the indicated size
+    for ($i = 0; $i -lt [int]$NumberOfVHDs; $i++) 
+    {
+        New-VHD -Path ($DestinationPath + "\" + $VMName + "VHD" + $i + ".vhdx") -SizeBytes $DriveSizeInt
+    }
+    #mount VHDs to indicated VM
+    for ($i = 0; $i -lt [int]$NumberOfVHDs; $i++) 
+    {
+        Get-VM $VMName | Add-VMHardDiskDrive -Path ($DestinationPath + "\" + $VMName + "VHD" + $i + ".vhdx") -ControllerType SCSI
+    } 
+    [void][System.Windows.Forms.MessageBox]::SHOW("VHDs have been created at the requested location and mounted to the indicated VM.","Script Completed","OK","Information")
 }
