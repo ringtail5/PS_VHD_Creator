@@ -6,3 +6,5 @@ This script was created to quickly and easily make numerous virtual hard drives 
 This was useful when learning how to manage volumes in the VMs by providing many drives to group as spanned, mirrored, or RAID volumes.
 
 And it is my first PowerShell script.  :P
+
+"PS_VHD_Creator(w_GUI).ps1" is the GUI version of the origional script.
